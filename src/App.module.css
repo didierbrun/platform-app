@@ -16,7 +16,22 @@
     color: #aaa;
 }
 
-.form input {
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.images {
+    display: flex;
+    margin-top: 20px;
+    gap: 10px;
+}
+.images img {
+    width: 256px;
+}
+
+input {
     border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;

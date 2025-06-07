@@ -1,6 +1,7 @@
 import css from './App.module.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { account, client } from './lib/appwrite'
+import axios from 'axios';
 
 function App() {
 
@@ -9,6 +10,9 @@ function App() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetching, setFetching] = useState(false);
+  const [images, setImages] = useState([]);
+  const [prompt, setPrompt] = useState("brunette girl")
 
   useEffect(() => {
     const init = async () => {
@@ -24,7 +28,7 @@ function App() {
   useEffect(() => {
     if (user === null) return;
     const unsubscribe = client.subscribe('account', response => {
-      if (response.events.includes('users.*.update.name')){
+      if (response.events.includes('users.*.update.name')) {
         setUser({
           ...user,
           name: response.payload.name
@@ -32,7 +36,7 @@ function App() {
       }
     });
     return () => {
-      unsubscribe(); 
+      unsubscribe();
     };
   }, [user])
 
@@ -51,8 +55,8 @@ function App() {
   const renderLogin = () => {
     return (
       <div className={css.form}>
-        <input value={email} onChange={(e) => { setEmail(e.currentTarget.value) }} placeHolder='Email' />
-        <input value={password} onChange={(e) => { setPassword(e.currentTarget.value) }} placeHolder='Password' type="password" />
+        <input value={email} onChange={(e) => { setEmail(e.currentTarget.value) }} placeholder='Email' />
+        <input value={password} onChange={(e) => { setPassword(e.currentTarget.value) }} placeholder='Password' type="password" />
         {error && <div className={css.error}>{error}</div>}
         <button onClick={handleLogin}>Login</button>
       </div>
@@ -62,13 +66,35 @@ function App() {
   const handleLogout = async () => {
     await account.deleteSessions();
     setUser(null);
+    setFetching(false);
+  }
+
+  const handleFetch = async () => {
+    setFetching(true)
+    const response = await axios.post('https://create-image.cidplatform.com',
+      {
+        prompt
+      }
+    )
+    setImages(response.data.images)
+    setFetching(false)
   }
 
   const renderLogout = () => {
     return (
-      <div className={css.form}>
-        <div className={css.hello}>Hello <span className={css.firstName}>{user.name}</span></div>
-        <button onClick={handleLogout}>Logout</button>
+      <div className={css.content}>
+        <div className={css.form}>
+          <div className={css.hello}>Hello <span className={css.firstName}>{user.name}</span></div>
+          <input value={prompt} onChange={(e) => {setPrompt(e.currentTarget.value)}} placeholder='Prompt'/>
+          <button onClick={handleLogout} disabled={fetching}>Logout</button>
+          <button onClick={handleFetch} disabled={fetching}>Generate</button>
+
+        </div>
+        <div className={css.images}>
+          {
+            images.map((im, index) => {return <img src={im} key={index}/>})
+          }
+        </div>
       </div>
     )
   }
