@@ -18,6 +18,7 @@ function App() {
       </div>
       <h1>Hello Guys</h1>
       <div className="card">
+        {import.meta.env.VITE_ENV}
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
