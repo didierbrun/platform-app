@@ -78,6 +78,8 @@ function App() {
     )
     setImages(response.data.images)
     setFetching(false)
+
+    console.log("RESULT")
   }
 
   const renderLogout = () => {
