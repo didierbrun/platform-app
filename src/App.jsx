@@ -1,6 +1,6 @@
 import css from './App.module.css'
 import { useState, useEffect } from 'react'
-import { account } from './lib/appwrite'
+import { account, client } from './lib/appwrite'
 
 function App() {
 
@@ -21,13 +21,28 @@ function App() {
     init()
   }, [])
 
+  useEffect(() => {
+    if (user == null) return;
+    const unsubscribe = client.subscribe('account', response => {
+      if (response.channels.includes('account')){
+        setUser({
+          ...user,
+          name: response.payload.name
+        })
+      }
+    });
+    return () => {
+      unsubscribe(); 
+    };
+  }, [user])
+
   const handleLogin = async () => {
     setError(null);
     try {
       await account.createEmailPasswordSession(email, password);
       const result = await account.get();
       setUser(result);
-    } catch (e){
+    } catch (e) {
       setError(e.message);
       setUser(null);
     }
@@ -36,9 +51,9 @@ function App() {
   const renderLogin = () => {
     return (
       <div className={css.form}>
-        <input value={email} onChange={(e) => {setEmail(e.currentTarget.value)}} placeHolder='Email'/>
-        <input value={password} onChange={(e) => {setPassword(e.currentTarget.value)}} placeHolder='Password' type="password"/>
-        { error && <div className={css.error}>{error}</div>}
+        <input value={email} onChange={(e) => { setEmail(e.currentTarget.value) }} placeHolder='Email' />
+        <input value={password} onChange={(e) => { setPassword(e.currentTarget.value) }} placeHolder='Password' type="password" />
+        {error && <div className={css.error}>{error}</div>}
         <button onClick={handleLogin}>Login</button>
       </div>
     )
