@@ -22,9 +22,9 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (user == null) return;
+    if (user === null) return;
     const unsubscribe = client.subscribe('account', response => {
-      if (response.channels.includes('account')){
+      if (response.events.includes('users.*.update.name')){
         setUser({
           ...user,
           name: response.payload.name
