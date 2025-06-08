@@ -13,6 +13,7 @@ function App() {
   const [fetching, setFetching] = useState(false);
   const [images, setImages] = useState([]);
   const [prompt, setPrompt] = useState("brunette girl")
+  const [story, setStory] = useState(null)
 
   useEffect(() => {
     const init = async () => {
@@ -70,6 +71,8 @@ function App() {
   }
 
   const handleFetch = async () => {
+    setImages([])
+    setStory(null)
     setFetching(true)
     const response = await axios.post('https://create-image.cidplatform.com',
       {
@@ -77,9 +80,30 @@ function App() {
       }
     )
     setImages(response.data.images)
+    setStory(null)
     setFetching(false)
+  }
 
-    console.log("RESULT")
+  const handleOllama = async () => {
+     setImages([])
+    setStory(null)
+    setFetching(true)
+    const result = await axios.post('https://ollama.cidplatform.com',
+      {
+        prompt
+      }
+    )
+    setStory(result.data.data.response);
+    setImages([])
+    setFetching(false)
+  }
+
+  const renderStory = () => {
+    return (
+      <div className={css.story}>
+        {story.split('\n').map((p, index) => { return (<p key={index}>{p}</p>) })}
+      </div>
+    )
   }
 
   const renderLogout = () => {
@@ -87,16 +111,23 @@ function App() {
       <div className={css.content}>
         <div className={css.form}>
           <div className={css.hello}>Hello <span className={css.firstName}>{user.name}</span></div>
-          <input value={prompt} onChange={(e) => {setPrompt(e.currentTarget.value)}} placeholder='Prompt'/>
+          <textarea
+            value={prompt}
+            onChange={(e) => { setPrompt(e.currentTarget.value) }}
+            placeholder='Prompt'
+          />
           <button onClick={handleLogout} disabled={fetching}>Logout</button>
-          <button onClick={handleFetch} disabled={fetching}>Generate</button>
+          <button onClick={handleFetch} disabled={fetching}>Generate Photos</button>
+          <button onClick={handleOllama} disabled={fetching}>Generate Story</button>
 
         </div>
         <div className={css.images}>
           {
-            images.map((im, index) => {return <img src={im} key={index}/>})
+            images.map((im, index) => { return <img src={im} key={index} /> })
           }
         </div>
+        {story && renderStory()}
+        {fetching && renderFetch()}
       </div>
     )
   }
@@ -108,6 +139,12 @@ function App() {
   const renderLoading = () => {
     return (
       <div className={css.loading}>Loading...</div>
+    )
+  }
+
+  const renderFetch = () => {
+    return (
+      <div>Génération en cours...</div>
     )
   }
 
