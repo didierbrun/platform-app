@@ -1,0 +1,21 @@
+.container {
+
+}
+
+.label {
+    margin-right: 5px;
+}
+
+.bar {
+    display: inline-block;
+    width: 100px;
+    height: 5px;
+    background-color: #EEE;
+    position: relative;
+}
+
+.progress {
+    position: absolute;
+    height: 5px;
+    background-color: cornflowerblue;
+}

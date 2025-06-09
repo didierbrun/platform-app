@@ -1,0 +1,13 @@
+.container {
+    font-size: 12px;
+}
+
+.row {
+    display: flex;
+    gap: 5px;
+}
+
+.gpulabel {
+    display: inline-block;
+    width: 40px;
+}

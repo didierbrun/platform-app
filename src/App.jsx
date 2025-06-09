@@ -2,6 +2,7 @@ import css from './App.module.css'
 import { useState, useEffect, useRef } from 'react'
 import { account, client } from './lib/appwrite'
 import axios from 'axios';
+import Monitor from './components/Monitor';
 
 function App() {
 
@@ -111,6 +112,7 @@ function App() {
       <div className={css.content}>
         <div className={css.form}>
           <div className={css.hello}>Hello <span className={css.firstName}>{user.name}</span></div>
+          <Monitor/>
           <textarea
             value={prompt}
             onChange={(e) => { setPrompt(e.currentTarget.value) }}
